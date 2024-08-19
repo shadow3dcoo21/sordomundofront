@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NameContext } from './NameContext';
-import '../style/Home.css'; // Asegúrate de crear este archivo para los estilos
+import '../style/NuevoUsuario.css';
 
-const Home = () => {
+const NuevoUsuario = () => {
   const { setName } = useContext(NameContext);
   const [inputName, setInputName] = useState('');
   const navigate = useNavigate();
@@ -13,20 +13,17 @@ const Home = () => {
     navigate('/presentar');
   };
 
-  const handleNewUser = () => {
-    navigate('/nuevo-usuario');
+  const handleAtras = () => {
+    navigate('/');
   };
 
   return (
     <div className="context">
       <div className="hijoconte">
         <img src="/images/fondo.svg" alt="Background" className="background-image" />
-        <div className="titu">
-          <h2>Bienvenido a</h2>
-        </div>
         <div className="home-container">
           <div className="content">
-            <img src="/images/SORDOMUNDO.svg" alt="SVG Image" className="svg-image" />
+            <h2 id='pregunta'>¿Cuál es tu nombre?</h2>
             <input 
               type="text" 
               placeholder="Ingresa tu nombre" 
@@ -35,7 +32,7 @@ const Home = () => {
               className="name-input" 
             />
             <button onClick={handleStart} className="start-button">INICIAR</button>
-            <button onClick={handleNewUser} className="new-user-button">Nuevo Usuario</button>
+            <button onClick={handleAtras} className="atras-button">Atrás</button>          
           </div>
         </div>
       </div>
@@ -43,4 +40,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default NuevoUsuario;

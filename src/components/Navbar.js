@@ -9,7 +9,11 @@ const Navbar = () => {
   if (location.pathname === '/') {
     return null;
   }
+  if (location.pathname === '/nuevo-usuario') {
+    return null;
+  }
 
+  
   return (
     <nav>
       <ul className="navbar">

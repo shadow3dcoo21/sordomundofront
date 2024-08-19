@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../style/Completar.css';
 import axios from 'axios';
-import { faFilm, faVideo, faPlayCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faFilm, faVideo, faPlayCircle, faTimes, faWindowMinimize } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Completar = () => {
@@ -14,7 +14,7 @@ const Completar = () => {
   const [completarinfo3, setcompletarinfo3] = useState('');
 
   const [isTitleVisible, setIsTitleVisible] = useState(true);
-  const [buttonIcon, setButtonIcon] = useState(faFilm);
+  const [buttonIcon, setButtonIcon] = useState(faWindowMinimize);
 
   const [input, setInput] = useState('');
   const [message, setMessage] = useState('');
@@ -249,12 +249,12 @@ const [selectedPresentacionIndex, setSelectedPresentacionIndex] = useState(-1);
               <div className='imas'>
                 <div className='contenedorteclado'>
                   <button className='botonverm' onClick={() => handleButtonClickcompletar(0)}>
-                    <img className='logotecadoi' src="/images/teclado.svg"/>
+                    <img className='logotecadoi' src="/images/primeraPalabra.svg"/>
                   </button>
                 </div>
                 <div className='contenedorteclado'>
                   <button className='botonverm' onClick={() => handleButtonClickcompletar(1)}>
-                    <img className='logotecadoi' src="/images/teclado.svg"/>
+                    <img className='logotecadoi' src="/images/multiPalabras.svg"/>
                   </button>
                 </div>
                 <div className='boton_ver'>
@@ -264,7 +264,7 @@ const [selectedPresentacionIndex, setSelectedPresentacionIndex] = useState(-1);
                 </div>
                 <div className='boton_ver'>
                   <button className='botonverm' onClick={handleRandomChange}>
-                    <img className='logotecadoi' src="/images/teclado.svg"/>
+                    <img className='logotecadoi' src="/images/cambiarTexto.svg"/>
                   </button>
                 </div>
               </div>

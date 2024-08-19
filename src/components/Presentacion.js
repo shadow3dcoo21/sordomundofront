@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 
-import { faFilm, faVideo, faPlayCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faFilm, faVideo, faPlayCircle, faTimes,faTextSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NameContext } from './NameContext';
 
@@ -13,7 +13,7 @@ const Presentacion = () => {
   const [selectedPresentacion, setSelectedPresentacion] = useState(null);
   const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
   const [isTitleVisible, setIsTitleVisible] = useState(true);
-  const [buttonIcon, setButtonIcon] = useState(faFilm);
+  const [buttonIcon, setButtonIcon] = useState(faTextSlash);
 
   const { name } = useContext(NameContext);
 
@@ -72,7 +72,7 @@ const Presentacion = () => {
   */
   const botonver = () => {
     setIsTitleVisible(!isTitleVisible);
-    setButtonIcon(isTitleVisible ? faTimes : faFilm);
+    setButtonIcon(isTitleVisible ? faTimes : faTextSlash);
   };
 
   const handleButtonClick = (index) => {
@@ -125,7 +125,7 @@ const Presentacion = () => {
                   <div className='boton_ver'>
                     <button className='botonverm' onClick={handleRandomChange}>
                     
-                    <img className='logotecadoi' src="/images/teclado.svg"/>
+                    <img className='logotecadoi' src="/images/cambiarTexto.svg"/>
                     </button>
                   </div>
                   
