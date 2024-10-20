@@ -18,6 +18,7 @@ const Completar = () => {
 
   const [input, setInput] = useState('');
   const [message, setMessage] = useState('');
+  const [image, setImage] = useState(null);
   const [showCompletado, setShowCompletado] = useState(false);
   const [inputStage, setInputStage] = useState(0); 
   const [attempts, setAttempts] = useState(50); 
@@ -100,6 +101,7 @@ const Completar = () => {
         console.log(inputStage);
         if (inputStage + 1 === completarinfo3Array.length) {
           setMessage('¡Muy Bien!');
+          setImage('/images/correct.png');
           setShowCompletado(true);
           setFinalResults({
             attempts,
@@ -112,10 +114,12 @@ const Completar = () => {
         }
       } else {
         setMessage('Otra Vez.');
+        setImage('/images/answer.png');
         setFailedAttempts(failedAttempts + 1);
         console.log(attempts)
         if (attempts-2  <= 0) {
           setMessage('Has fallado todos los intentos.');
+          setImage('/images/error.png');
           setFinalResults({
             attempts: attempts + 1,
             successfulAttempts,
