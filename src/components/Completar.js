@@ -1,9 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef,useContext } from 'react';
 import '../style/Completar.css';
 import axios from 'axios';
 import { faFilm, faVideo, faPlayCircle, faTimes, faWindowMinimize } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { NameContext } from './NameContext';
 
+const arriba="hola";
+console.log(arriba);
 const Completar = () => {
   const [presentaciones, setPresentaciones] = useState([]);
   const [selectedPresentacion, setSelectedPresentacion] = useState(null);
@@ -26,6 +29,24 @@ const Completar = () => {
   const [finalResults, setFinalResults] = useState(null); 
   const inputRef = useRef(null);
   const [original,setorginal]=useState('');
+///
+const [image, setImage] = useState(null);
+const [letrateclado,setletrateclado]= useState([]);
+const [fechaHora, setFechaHora] = useState('');
+const { user } = useContext(NameContext); // Accedemos a los datos del usuario
+const [idusuario, setIdusuario] = useState('');
+const [stipocompletar, setstipocompletar] = useState(0);
+const [identificadorcomplet, setidentificadorcomplet] = useState('');
+//imagen
+const [resulimage, setresulimage] = useState(null); 
+useEffect(() => {
+  // Guardamos el ID del usuario en el estado local cuando el componente se monta
+  if (user.id) {
+    setIdusuario(user.id);
+  }
+}, [user.id]); // Dependencia para actualizar el estado cuando el ID del usuario cambia
+
+
   const completarinfo3Array = Array.isArray(completarinfo3)
     ? [...completarinfo3].reverse()
     : completarinfo3.split('').reverse();
@@ -44,7 +65,32 @@ const Completar = () => {
         }
       })
       .catch(error => console.error('Error al obtener los datos:', error));
+      //teclado
+          // Función que maneja el evento de tecla presionada
+        const handleKeyPress = (event) => {
+          const newLetter = event.key;
+          setletrateclado((prevLetras) => [...prevLetras, newLetter]);
+          actualizarFechaHora();
+        };
+
+        // Agregar el listener del evento de teclas
+        window.addEventListener('keydown', handleKeyPress);
+
+        // Limpiar el listener cuando el componente se desmonte
+        return () => {
+          window.removeEventListener('keydown', handleKeyPress);
+        };
+
   }, []);
+
+    // Función que obtiene la fecha y hora actuales
+    const actualizarFechaHora = () => {
+      const now = new Date();
+      const dia = now.toLocaleDateString(); // Fecha en formato local
+      const hora = now.toLocaleTimeString(); // Hora en formato local
+      setFechaHora(`${dia} ${hora}`);
+    };
+
 
   useEffect(() => {
     if (inputRef.current) {
@@ -52,7 +98,7 @@ const Completar = () => {
     }
   }, [completarinfo3]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = async (e) => {
     const value = e.target.value;
     
     setInput(value); 
@@ -77,7 +123,7 @@ const Completar = () => {
           for (let a = 0; a < mostrarresultado.length; a++) {
             if (mostrarresultado[a] === '_') {
               mostrarresultado[a] = vari;;
-              console.log(mostrarresultado);
+              console.log("una peq",mostrarresultado);
               break;
             }
           }
@@ -90,42 +136,107 @@ const Completar = () => {
 
       setInput(''); 
     }
-
+    
     if (completarinfo3Array.length > 0) {
       setAttempts(attempts -1); 
       console.log(completarinfo3Array[inputStage].toUpperCase());
       if (value.toUpperCase() === completarinfo3Array[inputStage].toUpperCase()) {
+        setImage('/images/correct.png');
         setMessage('¡Correcto!');
         setSuccessfulAttempts(successfulAttempts + 1);
+        setresulimage({
+          Image
+        });
         console.log(inputStage);
         if (inputStage + 1 === completarinfo3Array.length) {
+          setImage('/images/correct.png');
           setMessage('¡Muy Bien!');
           setShowCompletado(true);
           setFinalResults({
             attempts,
             successfulAttempts: successfulAttempts + 1,
             failedAttempts,
-            finalMessage: '¡Completaste todos los intentos correctamente!'
+            finalMessage: '¡Completaste todos los intentos correctamente!',
           });
-        } else {
+          
+          setresulimage({
+            Image
+          });
+        
+          // Crear el objeto de juego
+          const juegoData = {
+            alumno: idusuario, // Asegúrate de obtener el ID del alumno correcto
+            
+            palabra: completarinfo2, // La palabra que deseas guardar
+            opciones: [
+              {
+                opcion: identificadorcomplet, // Ajusta según sea necesario
+                hora: fechaHora, // Si tienes la hora en otra variable, úsala
+                intentos: successfulAttempts,
+                fallidos: failedAttempts,
+                letras: letrateclado, // Asegúrate de que contenga las letras necesarias
+              },
+            ],
+          };
+        
+          // Enviar los datos al backend
+          try {
+            const response = await fetch('http://localhost:3000/registrardatoscomletar', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(juegoData),
+            });
+        
+            if (!response.ok) {
+              throw new Error('Error al guardar el juego');
+            }
+        
+            const result = await response.json();
+            console.log('Juego guardado con éxito:', result);
+          } catch (error) {
+            console.error('Error al enviar datos:', error);
+          }
+        }
+        else {
           setInputStage(inputStage + 1);
         }
       } else {
+        setImage('/images/answer.png');
         setMessage('Otra Vez.');
         setFailedAttempts(failedAttempts + 1);
         console.log(attempts)
+        setresulimage({
+          Image
+        });
         if (attempts-2  <= 0) {
           setMessage('Has fallado todos los intentos.');
+          setImage('/images/error.png');
           setFinalResults({
             attempts: attempts + 1,
             successfulAttempts,
             failedAttempts: failedAttempts + 1,
             finalMessage: 'Fallaste todos los intentos.'
           });
+          setresulimage({
+            Image
+          });
         }
       }
     }
   };
+  console.log("vamos a probar1",completarinfo2);
+  console.log("vamos a probar2",original);
+  console.log("vamos a probar3",presentaciones);
+  console.log("vamos a probar4",selectcompletar);
+  console.log("vamos a proba5",completarinfo);
+  console.log("vamos a probar6",completarinfo3);
+  console.log("vamos a proba7",completarinfo2);
+  console.log("vamos a probar8",showCompletado);
+  console.log("vamos a probar9",input);
+  console.log("vamos a probar10",message);
+
 
   const resetGame = () => {
     setInput('');
@@ -139,6 +250,9 @@ const Completar = () => {
     setSuccessfulAttempts(0);
     setFailedAttempts(0);
     setFinalResults(null);
+    setImage(null);
+    setresulimage(null);
+
   };
 
   
@@ -163,8 +277,21 @@ const Completar = () => {
                 : index === 2 ? 'incompletoTotal' 
                 : null;
   
+
+    setstipocompletar(index)
+    
+    // Cambia las condiciones para basarlas en el valor de 'tipo'
+    if (tipo === 'incompleto1') {
+      setidentificadorcomplet("opcion1");
+    } else if (tipo === 'incompleto2') {
+      setidentificadorcomplet("opcion2");
+    } else if (tipo === 'incompletoTotal') {
+      setidentificadorcomplet("opcion3");
+    }
+    
     if (!tipo) {
       console.error('Tipo no válido para el índice:', index);
+      
       return;
     }
   
@@ -188,7 +315,7 @@ const Completar = () => {
       const mostrarletraeliminada = letrasEliminadas;
       console.log(mostrarletraeliminada);
       console.log(input);
-      console.log(completarinfo);
+      console.log("prueba3",completarinfo);
       if (nombreManipulado !== undefined) {
         setcompletarinfo(nombreManipulado);
       } else {
@@ -227,17 +354,118 @@ const [selectedPresentacionIndex, setSelectedPresentacionIndex] = useState(-1);
     }
   };
 
+  const [isExpanded, setIsExpanded] = useState(false);
+ 
+  const [divWidth, setDivWidth] = useState(0); // Cambiar a width
+
+  const handleClick = () => {
+    setIsExpanded(!isExpanded);
+    
+
+    if (!isExpanded) {
+      // Expandir el div
+      setDivWidth(600); // Cambia 200 por el tamaño que desees
+    } else {
+      // Guardar tamaño actual y volver al tamaño inicial
+      setDivWidth(0);
+    }
+  };
+
+
   return (
     <div className='cuerpo_general'>
+
+          <div  className='modal__' style={{ display: 'flex', alignItems: 'flex-start' ,position:'absolute',right: 0 ,zIndex:99999,overflow:'hidden'}}>
+                <button 
+                  className='boton__modal'
+                  onClick={handleClick} 
+                  
+                >
+                    <img className='logotecadoi2' src="/images/primeraPalabra.svg"/>
+                </button>  
+              <div 
+              className='contenido__we'
+                style={{ 
+                  width: `${divWidth}px`, // Cambiar height a width
+                  height: '550px', // Establecer una altura fija para el div
+                   
+                  transition: 'width 0.5s ease', // Cambia la duración según sea necesario
+                  overflow: 'hidden' 
+                }}
+              >
+
+
+                {/* Contenido del div expandido (opcional) */}
+                
+
+                <div className="presentacion-container">
+                  <div className='informacion_alumno'>
+                    <h2>Datos del Usuario</h2>
+                    <div>Nombre: {user.nombres}</div>
+                    <div>Apellido: {user.apellidos}</div>
+                    <div>ID: {user.id}</div>
+                    <div>ID: {user.id}</div>
+
+                  </div>
+
+                  <div className='informacion_alumno'>
+                    <h2>Puntaje</h2>
+                    <div>Nombre: {user.nombres}</div>
+                    <div>Apellido: {user.apellidos}</div>
+                    <div>ID: {user.id}</div>
+                    <div>ID: {user.id}</div>
+
+                  </div>
+
+                  <div className='informacion_alumno'>
+                    <h2>Palabras</h2>
+                    <div>Nombre: {user.nombres}</div>
+                    <div>Apellido: {user.apellidos}</div>
+                    <div>ID: {user.id}</div>
+                    <div>ID: {user.id}</div>
+
+                  </div>
+
+                  <div className='informacion_alumno'>
+                    <h2>Datos del Usuario</h2>
+                    <div>Nombre: {user.nombres}</div>
+                    <div>Apellido: {user.apellidos}</div>
+                    <div>ID: {user.id}</div>
+                    <div>ID: {user.id}</div>
+
+                  </div>
+
+                  
+                </div>
+
+
+
+              </div>
+
+              
+          </div>
+
+             
+
+
+
+
+          
+        
       <div className='cuerpo_general_interno'>
-      {finalResults && (
+
+                  {finalResults && (
                     <div className="final-results">
                       <p>{finalResults.finalMessage}</p>
                       <p>Intentos exitosos: {finalResults.successfulAttempts}</p>
                       <p>Intentos fallidos: {finalResults.failedAttempts}</p>
                       <p>Intentos restantes: {finalResults.attempts-1}</p>
-                      <button className='botonreini' onClick={resetGame}>Reiniciar juego</button>
+                      
+                      <button className='botonreini' onClick={resetGame }>Reiniciar juego</button>
+                      <button className='botonreini2' onClick={() => handleButtonClickcompletar(stipocompletar+1)}>Siguiente</button>
+                      <button className='botonreini3' onClick={handleRandomChange}>Cambiar Palabra</button>
                     </div>
+                    
                   )}
                   
       <div className='cuerpomediointernogen'>
@@ -270,6 +498,7 @@ const [selectedPresentacionIndex, setSelectedPresentacionIndex] = useState(-1);
               </div>
             </div>
 
+
             <div className='contendor_generalcompletar'>
               <div className='contendor_hijo_video'>
                 <div className='letrascontainer'>
@@ -277,7 +506,8 @@ const [selectedPresentacionIndex, setSelectedPresentacionIndex] = useState(-1);
 
                    
                     <p>intentos Restantes: {attempts}</p>
-                    <p className='letracompletar'>{showCompletado ? completarinfo2.toUpperCase() : completarinfo.toUpperCase()}</p>
+                    <p className='letracompletar2'>{showCompletado ? completarinfo2.toUpperCase() : completarinfo.toUpperCase()}</p>
+                    <p>{stipocompletar}</p>
                     <input
                       type="text"
                       ref={inputRef}
@@ -288,14 +518,25 @@ const [selectedPresentacionIndex, setSelectedPresentacionIndex] = useState(-1);
                     />
 
                   </div>
-                  <div className='Resultado'>
-                    <p className='letraresul'>{message}</p>
-                  </div>
+                  
+
+                  {resulimage && (
+                    <div className="Resultado">
+                      
+                      <img className='imagen_tre' src={`${image}`} />
+                    </div>
+                    
+                  )}
 
                   
                 </div>
               </div>
             </div>
+
+
+
+
+
 
             <div className='contendor_generalvideo'>
                 <div className='contendor_hijo_video'>
@@ -339,7 +580,7 @@ const [selectedPresentacionIndex, setSelectedPresentacionIndex] = useState(-1);
                     <img 
                       className='custom-video'
                       key={`${selectedPresentacion.nombre}-${selectedVideoIndex}`} 
-                      src={`${selectedPresentacion.titulos[selectedVideoIndex].video}`} 
+                      src={`http://localhost:3000/${selectedPresentacion.titulos[selectedVideoIndex].video}`} 
                       alt={selectedPresentacion.titulos[selectedVideoIndex].titulo} 
                     />
                   </div>

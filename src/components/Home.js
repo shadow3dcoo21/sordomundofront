@@ -1,16 +1,37 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NameContext } from './NameContext';
-import '../style/Home.css'; // Asegúrate de crear este archivo para los estilos
+import '../style/Home.css';
 
 const Home = () => {
-  const { setName } = useContext(NameContext);
+  const { setName, setUser } = useContext(NameContext); // Agregamos setUser
   const [inputName, setInputName] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleStart = () => {
-    setName(inputName);
-    navigate('/presentar');
+  const handleStart = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/verificar-nombre', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ nombres: inputName }),
+      });
+
+      const data = await response.json();
+
+      if (data.existe) {
+        setName(inputName);
+        setUser({ id: data.usuario._id, nombres: data.usuario.nombres, apellidos: data.usuario.apellidos }); // Guardar el usuario en el contexto
+        navigate('/presentar');
+      } else {
+        setError('El nombre no se encontró. Por favor, regístrate como nuevo usuario.');
+      }
+    } catch (error) {
+      console.error('Error al verificar nombre:', error);
+      setError('Ocurrió un error al verificar el nombre.');
+    }
   };
 
   const handleNewUser = () => {
@@ -34,6 +55,7 @@ const Home = () => {
               onChange={(e) => setInputName(e.target.value)} 
               className="name-input" 
             />
+            {error && <p className="error-message">{error}</p>}
             <button onClick={handleStart} className="start-button">INICIAR</button>
             <button onClick={handleNewUser} className="new-user-button">Nuevo Usuario</button>
           </div>

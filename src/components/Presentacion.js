@@ -19,6 +19,8 @@ const Presentacion = () => {
 
   const [nombres, setNombres] = useState([]);
   
+  const { user } = useContext(NameContext); // Accedemos a los datos del usuario
+
   useEffect(() => {
     fetch('http://localhost:3000/presentar')
       .then(response => response.json())
@@ -79,8 +81,100 @@ const Presentacion = () => {
     setSelectedVideoIndex(index);
   };
 
+
+
+
+  const [isExpanded, setIsExpanded] = useState(false);
+ 
+  const [divWidth, setDivWidth] = useState(0); // Cambiar a width
+
+  const handleClick = () => {
+    setIsExpanded(!isExpanded);
+    
+
+    if (!isExpanded) {
+      // Expandir el div
+      setDivWidth(600); // Cambia 200 por el tamaño que desees
+    } else {
+      // Guardar tamaño actual y volver al tamaño inicial
+      setDivWidth(0);
+    }
+  };
+
   return (
     <div className='cuerpo_general'>
+
+<div  className='modal__' style={{ display: 'flex', alignItems: 'flex-start' ,position:'absolute',right: 0 ,zIndex:99999,overflow:'hidden'}}>
+                <button 
+                  className='boton__modal'
+                  onClick={handleClick} 
+                  
+                >
+                    <img className='logotecadoi2' src="/images/primeraPalabra.svg"/>
+                </button>  
+              <div 
+              className='contenido__we'
+                style={{ 
+                  width: `${divWidth}px`, // Cambiar height a width
+                  height: '550px', // Establecer una altura fija para el div
+                   
+                  transition: 'width 0.5s ease', // Cambia la duración según sea necesario
+                  overflow: 'hidden' 
+                }}
+              >
+
+
+                {/* Contenido del div expandido (opcional) */}
+                
+
+                <div className="presentacion-container">
+                  <div className='informacion_alumno'>
+                    <h2>Datos del Usuario</h2>
+                    <div>Nombre: {user.nombres}</div>
+                    <div>Apellido: {user.apellidos}</div>
+                    <div>ID: {user.id}</div>
+                    <div>ID: {user.id}</div>
+
+                  </div>
+
+                  <div className='informacion_alumno'>
+                    <h2>Puntaje</h2>
+                    <div>Nombre: {user.nombres}</div>
+                    <div>Apellido: {user.apellidos}</div>
+                    <div>ID: {user.id}</div>
+                    <div>ID: {user.id}</div>
+
+                  </div>
+
+                  <div className='informacion_alumno'>
+                    <h2>Palabras</h2>
+                    <div>Nombre: {user.nombres}</div>
+                    <div>Apellido: {user.apellidos}</div>
+                    <div>ID: {user.id}</div>
+                    <div>ID: {user.id}</div>
+
+                  </div>
+
+                  <div className='informacion_alumno'>
+                    <h2>Datos del Usuario</h2>
+                    <div>Nombre: {user.nombres}</div>
+                    <div>Apellido: {user.apellidos}</div>
+                    <div>ID: {user.id}</div>
+                    <div>ID: {user.id}</div>
+
+                  </div>
+
+                  
+                </div>
+
+
+
+              </div>
+
+              
+          </div>
+
+      
       {/*
       <div>
         <div>
@@ -134,9 +228,10 @@ const Presentacion = () => {
 
               <div className='contenedor_images'>
                 <div className='images_con'>
-                 {/*} <p>{`http://localhost:3000${selectedPresentacion.imagen}`}</p>*/}
+                 {/* <p>{`http://localhost:3000/${selectedPresentacion.imagen}`}</p>*/}
                   <div className='imagen__'>
-                    <img className='imagen_servid' src={`${selectedPresentacion.imagen}`} alt={selectedPresentacion.nombre} />
+                    {/*<img className='imagen_servid' src={`${selectedPresentacion.imagen}`} alt={selectedPresentacion.nombre} />*/}
+                    <img className='imagen_servid' src={`http://localhost:3000/${selectedPresentacion.imagen}`} alt={selectedPresentacion.nombre} />
                   </div>
                   <div className='titulo_images'>
                     <div className='espacioyasabes'>
@@ -190,7 +285,8 @@ const Presentacion = () => {
                     <img 
                       className='custom-video' 
                       key={`${selectedPresentacion.nombre}-${selectedVideoIndex}`} 
-                      src={`${selectedPresentacion.titulos[selectedVideoIndex].video}`} 
+                      src={`http://localhost:3000/${selectedPresentacion.titulos[selectedVideoIndex].video}`} 
+                      
                       alt={selectedPresentacion.titulos[selectedVideoIndex].titulo} 
                     />
                   </div>

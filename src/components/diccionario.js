@@ -346,7 +346,7 @@ const Diccionario = () => {
                     <img 
                       className='custom-video'
                       key={`${selectedPresentacion.nombre}-${selectedVideoIndex}`} 
-                      src={`${selectedPresentacion.titulos[selectedVideoIndex].video}`} 
+                      src={`http://localhost:3000/${selectedPresentacion.titulos[selectedVideoIndex].video}`} 
                       alt={selectedPresentacion.titulos[selectedVideoIndex].titulo} 
                     />
                   </div>
