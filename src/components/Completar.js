@@ -4,13 +4,15 @@ import axios from 'axios';
 import { faFilm, faVideo, faPlayCircle, faTimes, faWindowMinimize } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { NameContext } from './NameContext';
+import { faReact,
+} from '@fortawesome/free-brands-svg-icons';
 
-const arriba="hola";
-console.log(arriba);
+
+import { faRotateRight } from '@fortawesome/free-solid-svg-icons'; // Cambiar aquí
 const Completar = () => {
   const [presentaciones, setPresentaciones] = useState([]);
   const [selectedPresentacion, setSelectedPresentacion] = useState(null);
-  const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState(2);
   const [selectcompletar, setselectcompletar] = useState(0);
   const [completarinfo, setcompletarinfo] = useState('');
   const [completarinfo2, setcompletarinfo2] = useState('');
@@ -267,6 +269,7 @@ useEffect(() => {
     setSelectedVideoIndex(index);
   };
 
+
   const handleButtonClickcompletar = async (index) => {
     resetGame();
 
@@ -349,7 +352,7 @@ const [selectedPresentacionIndex, setSelectedPresentacionIndex] = useState(-1);
       } while (randomIndex === selectedPresentacionIndex);
   
       setSelectedPresentacion(presentaciones[randomIndex]);
-      setSelectedVideoIndex(0);
+      setSelectedVideoIndex(2);
       setSelectedPresentacionIndex(randomIndex); // Almacena el índice seleccionado
     }
   };
@@ -371,9 +374,40 @@ const [selectedPresentacionIndex, setSelectedPresentacionIndex] = useState(-1);
     }
   };
 
+// Estado para la URL del GIF
+const [linkgift, setlinkgift] = useState('');
+const [gifSrc, setGifSrc] = useState('');
+
+// Actualiza la URL del GIF en función de `selectedPresentacion` y `selectedVideoIndex`
+useEffect(() => {
+  if (selectedPresentacion && selectedPresentacion.titulos[selectedVideoIndex]) {
+    setlinkgift(`http://localhost:3000/${selectedPresentacion.titulos[selectedVideoIndex].video}`);
+    setGifSrc(`http://localhost:3000/${selectedPresentacion.titulos[selectedVideoIndex].video}`);
+  }
+}, [selectedPresentacion, selectedVideoIndex]);
+  //resetgif
+
+ 
+
+  // Función para reiniciar el GIF
+const resetGif = () => {
+  // Cambia la URL temporalmente para forzar el reinicio
+  setGifSrc(''); // Primero se limpia
+  setTimeout(() => setGifSrc(linkgift), 0); // Se reinicia con un pequeño retraso
+};
+  
+  
+
+
+
 
   return (
-    <div className='cuerpo_general'>
+    <div className='cuerpo_general' style={{
+      backgroundImage: 'url(./ruta/a/tu-imagen.jpg)', // Usa comillas simples o dobles para la URL
+      backgroundSize: 'cover', // Asegúrate de agregar otras propiedades si es necesario
+      backgroundPosition: 'center', // Para centrar la imagen
+      
+  }}>
 
           <div  className='modal__' style={{ display: 'flex', alignItems: 'flex-start' ,position:'absolute',right: 0 ,zIndex:99999,overflow:'hidden'}}>
                 <button 
@@ -538,9 +572,11 @@ const [selectedPresentacionIndex, setSelectedPresentacionIndex] = useState(-1);
 
 
 
-            <div className='contendor_generalvideo'>
+            <div className='contendor_generalvideo_completar'>
                 <div className='contendor_hijo_video'>
-                  <div className='button-container'>
+                  
+                  <div className='button-container2'>
+
                   {selectedPresentacion.titulos.map((titulo, index) => (
                     <button
                       key={index}
@@ -572,19 +608,42 @@ const [selectedPresentacionIndex, setSelectedPresentacionIndex] = useState(-1);
                     </button>
                   ))}
 
+                  </div>
+
+
+                  <div className='video-container_completar'>
+                    
+                  <div className='contendor_vid-res'>
+                      <div className='video_con'>
+                      
+                        {/*<h3>{selectedPresentacion.titulos[selectedVideoIndex].titulo}</h3>*/}
+                        <img 
+                          className='custom-video'
+                          key={`${selectedPresentacion.nombre}-${selectedVideoIndex}`} 
+                          
+                          src={gifSrc} 
+                          alt={selectedPresentacion.titulos[selectedVideoIndex].titulo} 
+                        />
+                        
+                      </div>
+
+                      
+                  </div>
+                    <div className='resetbut'>
+                        <div>
+                          <button
+                          className='botonmodelo' onClick={resetGif} >
+                          <FontAwesomeIcon icon={faRotateRight} className='iconoreset' style={{color:'white'}} />
+                            
+                           </button>
+                          
+                          
+                        </div>
+                    </div>
 
                   </div>
-                  <div className='video-container'>
-                  <div className='video_con'>
-                    {/*<h3>{selectedPresentacion.titulos[selectedVideoIndex].titulo}</h3>*/}
-                    <img 
-                      className='custom-video'
-                      key={`${selectedPresentacion.nombre}-${selectedVideoIndex}`} 
-                      src={`http://localhost:3000/${selectedPresentacion.titulos[selectedVideoIndex].video}`} 
-                      alt={selectedPresentacion.titulos[selectedVideoIndex].titulo} 
-                    />
-                  </div>
-                  </div>
+
+
                 </div>
               </div>      
 

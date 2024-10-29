@@ -2,17 +2,15 @@ import React, { useState, useEffect} from 'react';
 import '../style/Diccionario.css';
 
 
-
-
 const Diccionario = () => {
-  const [presentaciones, setPresentaciones] = useState([]);
+
+  const [presentaciones, setPresentaciones] = useState([]);//Principal , aqui se guarda todos los datos de la base de datos que pedimos la primera vez
   const [selectedPresentacion, setSelectedPresentacion] = useState(0);
   const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
-  
-
-
-
   const [nombres, setNombres] = useState([]);
+
+
+  //Aqui carga los datos la primer vez desde la api
   useEffect(() => {
     fetch('http://localhost:3000/presentar')
       .then(response => response.json())
@@ -23,12 +21,7 @@ const Diccionario = () => {
           const nombresTemp = data.map(presentacion => presentacion.nombre);
           setNombres(nombresTemp);
 
-          if (data.length > 0) {
-            console.log( data);
-            
-            mostrardiccioletra(2,'C');
-            
-          }
+         
         } else {
           console.error('La respuesta de la API no es un array:', data);
         }
@@ -36,10 +29,13 @@ const Diccionario = () => {
       .catch(error => console.error('Error al obtener los datos:', error));
   }, []);
 
+
+
+
   useEffect(() => {
     if (presentaciones.length > 0) {
-      console.log(presentaciones);
-      mostrardiccioletra(2, 'C');
+      //console.log(presentaciones);
+      mostrardiccioletra(0, 'A');
     }
   }, [presentaciones]);
 
@@ -48,34 +44,11 @@ const Diccionario = () => {
     setSelectedVideoIndex(index);
   };
 
-  const handleButtonClickcompletar = async (index) => {
-    
-
-
-    const tipo = index === 0 ? 'incompleto1' 
-                : index === 1 ? 'incompleto2' 
-                : index === 2 ? 'incompletoTotal' 
-                : null;
-                console.log(tipo);
-    if (!tipo) {
-      console.error('Tipo no válido para el índice:', index);
-      return;
-    }
-  
-    const nombre = selectedPresentacion?.nombre;
-  
-    if (!nombre) {
-      console.error('El nombre de la presentación es undefined o no está definido');
-      return;
-    }
-  
-    console.log(`Solicitando datos para nombre: ${nombre}, tipo: ${tipo}`);
-  
-  };
 
   
   //izquierda abecedario
   const [abecedarios, setAbecedarios] = useState([]);
+
   useEffect(() => {
     // Crear un array vacío
     let abecedariosTemp = [];
@@ -85,28 +58,27 @@ const Diccionario = () => {
       abecedariosTemp.push(String.fromCharCode(65 + i)); // Letras mayúsculas A-Z
     }
     setAbecedarios(abecedariosTemp);
-    console.log(abecedarios)
+    //console.log(abecedarios)
   }, []);
   
+
+
   const [inici, setinici] = useState();
   const [seleccionadonommbrearray,setseleccionadonommbrearray]= useState([]);
 
   const mostrardiccioletra = async (index,letra) => {
-    console.log(index);
+    //console.log(index);
     let prueba=abecedarios[index];
-    console.log(prueba);
+    //console.log(prueba);
     setinici(prueba);
-    console.log(letra);
+    //console.log(letra);
 
-
-
-
-    console.log(inici);
-    console.log(abecedarios[index]);
+    //console.log(inici);
+    //console.log(abecedarios[index]);
     
-    console.log(abecedarios);
+    //console.log(abecedarios);
    
-    console.log(nombres);
+    //console.log(nombres);
     const arraynombres = [];
     
     for (let a=0;a<nombres.length;a++){
@@ -118,104 +90,90 @@ const Diccionario = () => {
       }
       if (espacio[0]===prueba){
         arraynombres.push(nombres[a]);
-        console.log(espacio[0])
-        console.log(nombres[a])
+        //console.log(espacio[0])
+        //console.log(nombres[a])
       }
       else{
         
-        console.log("mal")
+        //console.log("mal")
       }
-      console.log(arraynombres);
-      console.log(espacio);
+      //console.log(arraynombres);
+      //console.log(espacio);
 
-      console.log(inici);
+      //console.log(inici);
 
     }
     setseleccionadonommbrearray(arraynombres);
-    
-    
-    console.log(seleccionadonommbrearray);
+  
+    //console.log(seleccionadonommbrearray);
     if (arraynombres.length<0){
       pruebanadamas()
-      console.log("paso")
+      //console.log("paso")
     }
 
     selectionnew(arraynombres[0] , 0);
-
-    
-
   };
+
   useEffect(() => {
     
   }, [selectedPresentacion]);
 
 
 
-  useEffect(() => {
-    if (selectedPresentacion) {
-      handleButtonClickcompletar(0);
-    }
-  }, [selectedPresentacion]);
 
-
-
-  
   const selectionnew = (letra , index) =>{
 
-    console.log(index);
-    console.log(letra);    
+    //console.log(index);
+    //console.log(letra);    
 
-
-
-    
-    console.log(seleccionadonommbrearray[index])
+    //console.log(seleccionadonommbrearray[index])
 
     for(let i =0;i<presentaciones.length;i++){
       if(presentaciones[i].nombre===letra){
-        console.log("correcto funciono");
-        console.log(presentaciones[i].titulos);
-        console.log(presentaciones[i]);
+        //console.log("correcto funciono");
+        //console.log(presentaciones[i].titulos);
+        //console.log(presentaciones[i]);
         setSelectedPresentacion(presentaciones[i]);
         break
       }
     }
-    
 
-    console.log(presentaciones[index])
-
-    
-
-    
-    
-    console.log(selectedPresentacion.nombre);
-
-
-    
-
+    //console.log(presentaciones[index])
+    //console.log(selectedPresentacion.nombre);
 
   }
+
+  
+
+
+
       const pruebanadamas = () =>{
         setSelectedPresentacion({})
         
 
       }
 
-      const [selectedButtonBlock1, setSelectedButtonBlock1] = useState(2);
+      const [selectedButtonBlock1, setSelectedButtonBlock1] = useState(0);
       const [selectedButtonBlock2, setSelectedButtonBlock2] = useState(0);
       const handleButtonClickBlock1 = (index, letra) => {
         setSelectedButtonBlock1(index);
+        setSelectedButtonBlock2(0);
         mostrardiccioletra(index, letra);
       };
     
       const handleButtonClickBlock2 = (letra, index) => {
         setSelectedButtonBlock2(index);
         selectionnew(letra, index);
+        
       };
+
+
+
   return (
     <div className='cuerpo_generaldiccionario'>
       <div className='cuerpo_general_internodiccionario'>
       
-      {console.log(selectedPresentacion)}              
+                   
       <div className='cuerpomediointernogendiccio'>
       
             <div className='padre__dicci'>
@@ -257,23 +215,23 @@ const Diccionario = () => {
                       <div className='letrascontainer2'>
                         <div className='video_con1'>
                             
-                        <ul className='ul'>
-                          
-                        {seleccionadonommbrearray.length > 0 ? (
-                            seleccionadonommbrearray.map((letra, index) => (
-                              <button 
-                                key={index} 
-                                className={`botonverm2 ${selectedButtonBlock2 === index ? 'active' : ''}`} 
-                                onClick={() => handleButtonClickBlock2(letra, index)}
-                              >
-                                {console.log("si paso " + letra + index)}
-                                {letra}
-                              </button>
-                            ))
-                          ) : (
-                            <p>No hay datos de eso</p>
-                          )}
-                        </ul>
+                          <ul className='ul'>
+                            
+                          {seleccionadonommbrearray.length > 0 ? (
+                              seleccionadonommbrearray.map((letra, index) => (
+                                <button 
+                                  key={index} 
+                                  className={`botonverm2 ${selectedButtonBlock2 === index ? 'active' : ''}`} 
+                                  onClick={() => handleButtonClickBlock2(letra, index)}
+                                >
+                                  
+                                  {letra}
+                                </button>
+                              ))
+                            ) : (
+                              <p>No hay datos de eso</p>
+                            )}
+                          </ul>
 
 
                       
